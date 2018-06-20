@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,9 +7,10 @@ import {
   Linking,
   KeyboardAvoidingView,
   Platform } from 'react-native';
+import axios from 'axios';
+import validator from '../helpers/validate/validate';
 import InputField from './common/InputField';
 import Button from './common/Button';
-
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -25,27 +26,77 @@ export default class Login extends React.Component {
     }
   }
 
+  componentWillMount() {
+    axios.get('https://api.myjson.com/bins/140siq').then(response => console.log(response));
+  }
+
   validateEmail = (value) => {
+    console.log(value);
+    const result = validator.validateEmail(value);
+    if (!result.valid) {
+      this.setState({
+        email: value,
+        errors: {
+          ...this.state.errors,
+          email: result.errors[0]
+        }
+      });
+      return false;
+    }
     this.setState({
       email: value,
+      errors: {
+        ...this.state.errors,
+        email: ''
+      }
     });
-
-    alert(value);
+    return true;
   };
 
   validatePassword = (value) => {
+    const result = validator.validatePassword(value);
+    if (!result.valid) {
+      this.setState({
+        password: value,
+        errors: {
+          ...this.state.errors,
+          password: result.errors[0]
+        }
+      });
+      return false;
+    }
     this.setState({
       password: value,
+      errors: {
+        ...this.state.errors,
+        password: ''
+      }
     });
+    return true;
+  };
+
+  handleChangeText = (field, value) => {
+    console.log(field);
+    console.log(value);
+    switch (field) {
+      case 'Email':
+        this.validateEmail(value);
+        break;
+      case 'Password':
+        this.validatePassword(value);
+        break;
+      default:
+        break;
+    }
   };
 
   validateLogin() {
-    return this.validateEmail(this.state.email);
+    return this.validateEmail(this.state.email)
+      && this.validatePassword(this.state.password);
   }
 
   handleLogin() {
     this.validateLogin();
-    console.log(this.state.email);
 
   }
 
@@ -60,16 +111,22 @@ export default class Login extends React.Component {
             <View style={[styles.formLogin,]}>
               <Text style={[styles.largeText, styles.textStyle]}>Sign in</Text>
               <InputField
-                autoCorrect={true}
+                type="text"
+                name="email"
                 text="Email:"
+                autoCorrect={true}
                 placeholder="Enter your email..."
-                onChangeText={(evt, val) => this.handleChangeText('Email', val)}
+                onChange={(evt, val) => this.handleChangeText('Email', val)}
+                errors={this.state.errors.email}
               />
 
               <InputField
+                type="password"
+                name="password"
                 text="Password:"
                 placeholder="Enter your password..."
-                onChangeText={(evt, val) => this.handleChangeText('Password', val)}
+                onChange={(evt, val) => this.handleChangeText('Password', val)}
+                errors={this.state.errors.password}
               />
 
               <Button
@@ -77,8 +134,9 @@ export default class Login extends React.Component {
                 title="SIGN IN"
               />
 
-              <Text style={{color: 'blue', textDecorationLine: 'underline', paddingTop: 20, paddingBottom: 20}}
-                    onPress={() => Linking.openURL('http://google.com')}>
+              <Text
+                style={{color: 'blue', textDecorationLine: 'underline', paddingTop: 20, paddingBottom: 20}}
+                onPress={() => Linking.openURL('http://google.com')}>
                 Forgot password?
               </Text>
 

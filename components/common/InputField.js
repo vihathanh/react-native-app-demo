@@ -1,18 +1,17 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {Platform, StyleSheet, TextInput, View, Text} from 'react-native';
 
-export default class InputField extends React.Component {
+export default class InputField extends Component {
   constructor(props) {
     super(props);
     this.inputEl = React.createRef();
   }
 
-  handleChangeText = (event) => {
-    if (this.props.handleChangeText && this.props.handleChangeText.constructor === Function) {
-      this.props.handleChangeText(event, event.target.value);
+  onChange(event) {
+    if (this.props.onChange && this.props.onChange.constructor === Function) {
+      this.props.onChange(event, event.target.value);
     }
-    console.log(event)
-  };
+  }
 
   render() {
     return (
@@ -23,6 +22,8 @@ export default class InputField extends React.Component {
         </Text>
         <View style={styles.containerInputField}>
           <TextInput
+            type={this.props.type}
+            name={this.props.name}
             autoCorrect={this.props.autoCorrect}
             ref={this.inputEl}
             placeholder={this.props.placeholder}
@@ -30,11 +31,16 @@ export default class InputField extends React.Component {
             underlineColorAndroid="transparent"
             style={styles.textInput}
             clearButtonMode="always"
-            onChangeText={(evt) => this.handleChangeText(evt)}
+            onKeyUp={(evt) => this.onChange(evt)}
+            onBlur={(evt) => this.onChange(evt)}
             defaultValue={this.props.value}
             readOnly={this.props.readOnly}
           />
         </View>
+        <Text
+          style={[styles.smallText, styles.textErrorStyle]}
+          errors={this.props.error}>{this.props.error}
+        </Text>
       </View>
     );
   }
@@ -58,6 +64,10 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 15,
     fontFamily: Platform.OS === 'ios' ? 'AvenirNext-Regular' : 'Roboto',
+  },
+  textErrorStyle: {
+    textAlign: 'left',
+    marginLeft: 15,
   },
   largeText: {
     fontSize: 44,
