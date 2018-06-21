@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Platform, StyleSheet, TextInput, View, Text} from 'react-native';
+import { Platform, StyleSheet, TextInput, View, Text } from 'react-native';
 
 export default class InputField extends Component {
   constructor(props) {
@@ -7,16 +7,19 @@ export default class InputField extends Component {
     this.inputEl = React.createRef();
   }
 
-  onChange(event) {
-    if (this.props.onChange && this.props.onChange.constructor === Function) {
-      this.props.onChange(event, event.target.value);
-    }
-  }
+  onChange = event => {
+    // console.log("Text Change: ", event)
+    // if (this.props.onChange && this.props.onChange.constructor === Function) {
+      this.props.onChange(event);
+    // }
+  };
 
   render() {
     return (
       <View>
         <Text
+          // ref={this.props.name}
+          // onClick={() => this.inputEl.current.focus()}
           style={[styles.smallText, styles.textStyle]}
           text={this.props.text}>{this.props.text}
         </Text>
@@ -25,13 +28,14 @@ export default class InputField extends Component {
             type={this.props.type}
             name={this.props.name}
             autoCorrect={this.props.autoCorrect}
+            autoFocus={this.props.autoFocus}
             ref={this.inputEl}
             placeholder={this.props.placeholder}
             placeholderTextColor="#BDBDBD"
             underlineColorAndroid="transparent"
             style={styles.textInput}
             clearButtonMode="always"
-            onKeyUp={(evt) => this.onChange(evt)}
+            onChangeText={(evt) => this.onChange(evt)}
             onBlur={(evt) => this.onChange(evt)}
             defaultValue={this.props.value}
             readOnly={this.props.readOnly}
@@ -66,6 +70,7 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'AvenirNext-Regular' : 'Roboto',
   },
   textErrorStyle: {
+    color: 'red',
     textAlign: 'left',
     marginLeft: 15,
   },

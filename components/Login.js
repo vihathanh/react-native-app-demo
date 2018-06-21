@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform } from 'react-native';
 import axios from 'axios';
-import validator from '../helpers/validate/validate';
+import validator, {INPUT_FIELDS} from '../helpers/validate/validate';
 import InputField from './common/InputField';
 import Button from './common/Button';
 
@@ -31,8 +31,8 @@ export default class Login extends React.Component {
   }
 
   validateEmail = (value) => {
-    console.log(value);
     const result = validator.validateEmail(value);
+    console.log("result:", result);
     if (!result.valid) {
       this.setState({
         email: value,
@@ -41,6 +41,7 @@ export default class Login extends React.Component {
           email: result.errors[0]
         }
       });
+      console.log(this.state.errors.email);
       return false;
     }
     this.setState({
@@ -75,14 +76,12 @@ export default class Login extends React.Component {
     return true;
   };
 
-  handleChangeText = (field, value) => {
-    console.log(field);
-    console.log(value);
+  handleFieldChange = (field, value) => {
     switch (field) {
-      case 'Email':
+      case INPUT_FIELDS.EMAIL:
         this.validateEmail(value);
         break;
-      case 'Password':
+      case INPUT_FIELDS.PASSWORD:
         this.validatePassword(value);
         break;
       default:
@@ -111,12 +110,13 @@ export default class Login extends React.Component {
             <View style={[styles.formLogin,]}>
               <Text style={[styles.largeText, styles.textStyle]}>Sign in</Text>
               <InputField
-                type="text"
+                type="email"
                 name="email"
                 text="Email:"
                 autoCorrect={true}
+                autoFocus={true}
                 placeholder="Enter your email..."
-                onChange={(evt, val) => this.handleChangeText('Email', val)}
+                onChange={(val) => this.handleFieldChange(INPUT_FIELDS.EMAIL, val)}
                 errors={this.state.errors.email}
               />
 
@@ -125,7 +125,7 @@ export default class Login extends React.Component {
                 name="password"
                 text="Password:"
                 placeholder="Enter your password..."
-                onChange={(evt, val) => this.handleChangeText('Password', val)}
+                onChange={(val) => this.handleFieldChange(INPUT_FIELDS.PASSWORD, val)}
                 errors={this.state.errors.password}
               />
 
